@@ -237,12 +237,12 @@ class _ResgisterPageState extends State<ResgisterPage> {
                       ),
                     );
                   }
-                  // Navigator.push(
-                  //   context,
-                  //   CupertinoPageRoute(
-                  //     builder: (context) => const HomePage(),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding:
