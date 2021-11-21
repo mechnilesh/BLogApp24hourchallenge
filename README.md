@@ -1,6 +1,19 @@
 # mnblogapp
-Blog app
-A new Flutter project.
+Blog app Made by Nilesh Kumar Singh
+nilesh2001nk@gmal.com
+Feature:
+Email sigup
+Create Blog with image
+Pagination
+
+pending work :
+Google login
+Profile update
+search user by email/name
+forget password
+saved blog
+
+
 
 ## Getting Started
 
