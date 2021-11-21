@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mnblogapp/constants.dart';
+import 'package:mnblogapp/model/user.dart';
 import 'package:mnblogapp/view/add_blog.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -79,15 +80,15 @@ class ProfilePage extends StatelessWidget {
                   Column(
                     children: [
                       Text(
-                        'Nilesh Kumar Singh'.toUpperCase(),
+                        userClass.name.toUpperCase(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      const Text(
-                        'Flutter Developer',
-                        style: TextStyle(
+                      Text(
+                        userClass.title,
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
                         ),
@@ -117,9 +118,9 @@ class ProfilePage extends StatelessWidget {
                   // SizedBox(
                   //   height: 10,
                   // ),
-                  const Text(
-                    '''A paragraph is a self-contained unit of discourse in writing dealing with a particular point or idea. A paragraph consists of one or more sentences. Though not required by the syntax of any language, ''',
-                    style: TextStyle(
+                  Text(
+                    userClass.about,
+                    style: const TextStyle(
                       color: Colors.grey,
                       // fontSize: 12,
                     ),

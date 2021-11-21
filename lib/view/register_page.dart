@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mnblogapp/constants.dart';
 import 'package:mnblogapp/services/firebase/authetication.dart';
+import 'package:mnblogapp/services/firebase/firestore.dart';
 import 'package:mnblogapp/view/home_page.dart';
 import 'package:mnblogapp/view/login_page.dart';
 
@@ -21,6 +22,7 @@ class _ResgisterPageState extends State<ResgisterPage> {
 
   bool isEmailValid = false;
   bool isObsecureText = true;
+  bool isLoading = false;
 
   final _name = TextEditingController();
   final _email = TextEditingController();
@@ -29,6 +31,31 @@ class _ResgisterPageState extends State<ResgisterPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  signUp(String email, String password) async {
+    await signUptoFirebase(email, password);
+    await addUserInFirestore(name, email);
+
+    if (userIsLogedIn) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (Route<dynamic> route) => false);
+    }
+
+    if (isSnackBar) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: themeColor,
+          content: Text((sentence == 1)
+              ? 'The password provided is too weak or empty'
+              : 'The account already exists for that email.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -96,7 +123,7 @@ class _ResgisterPageState extends State<ResgisterPage> {
                     onChanged: (value) {
                       email = value.trimLeft();
                       isEmailValid = EmailValidator.validate(email);
-                      print(isEmailValid);
+                      // print(isEmailValid);
                     },
                     cursorColor: themeColor,
                     style: TextStyle(
@@ -205,62 +232,44 @@ class _ResgisterPageState extends State<ResgisterPage> {
               const SizedBox(
                 height: 40,
               ),
-              TextButton(
-                onPressed: () {
-                  if (name.isEmpty ||
-                      email.isEmpty ||
-                      password.isEmpty ||
-                      isEmailValid == false ||
-                      confirmPassword.isEmpty) {
-                    // setState(() {
-                    //   _openWarningText = true;
-                    // });
-                  } else {
-                    if (password == confirmPassword) {
-                      setState(() {
-                        // _openWarningText = false;
-                        // isProgress = true;
-                      });
-                    }
-                  }
-                  var value = signUp(email, password);
-                  if (value == 'weak') {
-                    setState(() {
-                      // isProgress = false;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: themeColor,
-                        content: const Text(
-                          'The account already exists for that email.',
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : TextButton(
+                      onPressed: () {
+                        if (name.isEmpty ||
+                            email.isEmpty ||
+                            password.isEmpty ||
+                            isEmailValid == false ||
+                            confirmPassword.isEmpty) {
+                          // setState(() {
+                          //   _openWarningText = true;
+                          // });
+                        } else {
+                          if (password == confirmPassword) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            signUp(email, password);
+                          }
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 25),
+                        child: Text(
+                          "Click to Sign-Up",
+                          style: TextStyle(
+                            color: lightColor,
+                            // fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    );
-                  }
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => const HomePage(),
+                      style: TextButton.styleFrom(
+                        backgroundColor: themeColor,
+                        shape: const StadiumBorder(),
+                      ),
                     ),
-                  );
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-                  child: Text(
-                    "Click to Sign-Up",
-                    style: TextStyle(
-                      color: lightColor,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: themeColor,
-                  shape: const StadiumBorder(),
-                ),
-              ),
               const SizedBox(
                 height: 50,
               ),

@@ -1,6 +1,8 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mnblogapp/constants.dart';
+import 'package:mnblogapp/services/firebase/authetication.dart';
 import 'package:mnblogapp/view/register_page.dart';
 
 import 'home_Page.dart';
@@ -13,7 +15,37 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // bool clickedLogin = true;
+  String password = "";
+  String email = "";
+
+  bool isEmailValid = false;
+  bool isObsecureText = true;
+  bool isLoading = false;
+
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+
+  logIn(String email, String password) async {
+    await logInToFirebase(email, password);
+    if (userIsLogedIn) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (Route<dynamic> route) => false);
+    } else if (isSnackBar) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: themeColor,
+          content: Text((sentence == 1)
+              ? 'No user found for that email.'
+              : 'Wrong password provided for that user.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +71,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
-                    // controller: _name,
+                    controller: _email,
                     onChanged: (value) {
-                      // this.name = value.trimLeft();
+                      email = value.trimLeft();
+                      isEmailValid = EmailValidator.validate(email);
+                      // print(isEmailValid);
                     },
                     cursorColor: themeColor,
                     style: TextStyle(
@@ -74,10 +108,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   child: TextFormField(
-                    // obscureText: obsecureText,
-                    // controller: _password,
+                    obscureText: isObsecureText,
+                    controller: _password,
                     onChanged: (value) {
-                      // this.password = value.trimLeft();
+                      password = value.trimLeft();
                     },
                     cursorColor: themeColor,
                     style: TextStyle(
@@ -85,18 +119,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.remove_red_eye_outlined,
-                          // color: obsecureText ? Colors.grey[400] : pinkColor,
+                          color: isObsecureText ? Colors.grey[400] : themeColor,
                         ),
                         onPressed: () {
-                          // setState(() {
-                          //   if (obsecureText) {
-                          //     obsecureText = false;
-                          //   } else {
-                          //     obsecureText = true;
-                          //   }
-                          // });
+                          setState(() {
+                            if (isObsecureText) {
+                              isObsecureText = false;
+                            } else {
+                              isObsecureText = true;
+                            }
+                          });
                         },
                       ),
                       prefixIcon: Icon(
@@ -116,32 +150,40 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 40,
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => const HomePage(),
+              isLoading
+                  ? CircularProgressIndicator()
+                  : TextButton(
+                      onPressed: () {
+                        if (email.isEmpty ||
+                            password.isEmpty ||
+                            isEmailValid == false) {
+                          // setState(() {
+                          //   _openWarningText = true;
+                          // });
+                        } else {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          logIn(email, password);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 25),
+                        child: Text(
+                          "Click to Log-In",
+                          style: TextStyle(
+                            color: lightColor,
+                            // fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: themeColor,
+                        shape: const StadiumBorder(),
+                      ),
                     ),
-                  );
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-                  child: Text(
-                    "Click to Log-In",
-                    style: TextStyle(
-                      color: lightColor,
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: themeColor,
-                  shape: const StadiumBorder(),
-                ),
-              ),
               const SizedBox(
                 height: 50,
               ),

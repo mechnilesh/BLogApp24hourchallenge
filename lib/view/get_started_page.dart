@@ -14,6 +14,11 @@ class GetStartedPage extends StatefulWidget {
 }
 
 class _GetStartedPageState extends State<GetStartedPage> {
+  checkUserStatus() async {
+    await authStatus();
+    setState(() {});
+  }
+
   @override
   void initState() {
     checkUserStatus();

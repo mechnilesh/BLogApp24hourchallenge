@@ -1,10 +1,22 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mnblogapp/constants.dart';
 
 class ReadBlogPage extends StatelessWidget {
-  const ReadBlogPage({Key? key}) : super(key: key);
+  const ReadBlogPage({
+    Key? key,
+    required this.title,
+    required this.desc,
+    required this.blogername,
+    required this.imageUrl,
+  }) : super(key: key);
+
+  final String title;
+  final String desc;
+  final String blogername;
+  final List imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +44,29 @@ class ReadBlogPage extends StatelessWidget {
                       color: Colors.yellow,
                       borderRadius: BorderRadius.circular(14),
                     ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          height: 40,
+                          width: 40,
+                          // color: Colors.,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                themeColor,
+                                // Colors.grey[100],
+                                Colors.white
+                              ],
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                        imageUrl: imageUrl[0].toString(),
+                      ),
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
@@ -58,8 +93,8 @@ class ReadBlogPage extends StatelessWidget {
                 height: 15,
               ),
               Row(
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     "By ",
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
@@ -67,8 +102,8 @@ class ReadBlogPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "kelly Pefer",
-                    style: TextStyle(
+                    blogername,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -78,7 +113,7 @@ class ReadBlogPage extends StatelessWidget {
                 height: 20,
               ),
               Text(
-                'How to become master in colour palette?',
+                title,
                 style: TextStyle(
                   color: darkColor,
                   fontWeight: FontWeight.bold,
@@ -89,11 +124,7 @@ class ReadBlogPage extends StatelessWidget {
                 height: 20,
               ),
               Text(
-                '''Paragraphs vary in length depending on the needs of the paragraph. Usually, paragraphs are between one-third and two-thirds of a page double spaced.
-
-A series of long paragraphs can make prose dense and unpleasant to read. Check any paragraph that is a page or longer to see whether it would work better as two or more paragraphs. Break it at a logical place (e.g., where your focus shifts), and see whether you need to create new topic sentences to make the shift clear.
-
-Also look out for short paragraphs only two or three sentences long. They make academic writing seem disjointed or skimpy. Try combining short paragraphs with the preceding or following paragraph if they share the same topic. Short paragraphs might also need to be developed further. Make sure that nothing vital has been omitted.''',
+                desc,
                 style: TextStyle(
                   color: Colors.grey[600],
                   // fontWeight: FontWeight.bold,
